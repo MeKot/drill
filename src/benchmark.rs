@@ -53,8 +53,7 @@ fn join<S: ToString>(l: Vec<S>, sep: &str) -> String {
   )
 }
 
-pub fn execute(benchmark_path: &str, report_path_option: Option<&str>, relaxed_interpolations: bool, no_check_certificate: bool, quiet: bool, nanosec: bool) -> BenchmarkResult {
-  let config = Arc::new(Config::new(benchmark_path, relaxed_interpolations, no_check_certificate, quiet, nanosec));
+pub fn execute(config: Arc<Config>, report_path_option: Option<&str>) -> BenchmarkResult {
 
   if report_path_option.is_some() {
     println!("{}: {}. Ignoring {} and {} properties...", "Report mode".yellow(), "on".purple(), "concurrency".yellow(), "iterations".yellow());
@@ -73,7 +72,7 @@ pub fn execute(benchmark_path: &str, report_path_option: Option<&str>, relaxed_i
     let mut benchmark: Benchmark = Benchmark::new();
     let pool_store: PoolStore = PoolStore::new();
 
-    include::expand_from_filepath(benchmark_path, &mut benchmark, Some("plan"));
+    include::expand_from_filepath(&config.benchmark_path, &mut benchmark, Some("plan"));
 
     let benchmark = Arc::new(benchmark);
     let pool = Arc::new(Mutex::new(pool_store));

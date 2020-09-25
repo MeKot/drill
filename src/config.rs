@@ -9,6 +9,7 @@ const NRAMPUP: i64 = 0;
 
 pub struct Config {
   pub base: String,
+  pub benchmark_path: String,
   pub concurrency: i64,
   pub iterations: i64,
   pub relaxed_interpolations: bool,
@@ -19,8 +20,8 @@ pub struct Config {
 }
 
 impl Config {
-  pub fn new(path: &str, relaxed_interpolations: bool, no_check_certificate: bool, quiet: bool, nanosec: bool) -> Config {
-    let config_file = reader::read_file(path);
+  pub fn new(benchmark_path: &str, relaxed_interpolations: bool, no_check_certificate: bool, quiet: bool, nanosec: bool) -> Config {
+    let config_file = reader::read_file(benchmark_path);
 
     let config_docs = YamlLoader::load_from_str(config_file.as_str()).unwrap();
     let config_doc = &config_docs[0];
@@ -39,6 +40,7 @@ impl Config {
 
     Config {
       base,
+      benchmark_path: String::from(benchmark_path),
       concurrency,
       iterations,
       relaxed_interpolations,

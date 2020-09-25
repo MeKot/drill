@@ -9,28 +9,37 @@ mod writer;
 mod ui;
 
 use crate::actions::Report;
-use clap::crate_version;
+use clap::{crate_version, ArgMatches};
 use clap::{App, Arg};
 use colored::*;
 use linked_hash_map::LinkedHashMap;
 use std::collections::HashMap;
 use std::f64;
 use std::process;
+use crate::config::Config;
+use std::sync::Arc;
 
-fn main() {
-  let matches = app_args();
+fn build_config(matches: &ArgMatches) -> Arc<Config>{
   let benchmark_file = matches.value_of("benchmark").unwrap();
-  let report_path_option = matches.value_of("report");
-  let stats_option = matches.is_present("stats");
-  let compare_path_option = matches.value_of("compare");
-  let threshold_option = matches.value_of("threshold");
   let no_check_certificate = matches.is_present("no-check-certificate");
   let relaxed_interpolations = matches.is_present("relaxed-interpolations");
   let quiet = matches.is_present("quiet");
   let nanosec = matches.is_present("nanosec");
   let _tui_option = matches.is_present("tui");
 
-  let benchmark_result = benchmark::execute(benchmark_file, report_path_option, relaxed_interpolations, no_check_certificate, quiet, nanosec);
+  Arc::new(Config::new(benchmark_file, relaxed_interpolations, no_check_certificate, quiet, nanosec))
+}
+
+fn main() {
+  let matches = app_args();
+  let report_path_option = matches.value_of("report");
+  let stats_option = matches.is_present("stats");
+  let compare_path_option = matches.value_of("compare");
+  let threshold_option = matches.value_of("threshold");
+  let config = build_config(&matches);
+  let nanosec = config.nanosec;
+
+  let benchmark_result = benchmark::execute(config, report_path_option);
   let list_reports = benchmark_result.reports;
   let duration = benchmark_result.duration;
 
