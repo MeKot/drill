@@ -6,6 +6,7 @@ mod expandable;
 mod interpolator;
 mod reader;
 mod writer;
+mod ui;
 
 use crate::actions::Report;
 use clap::crate_version;
@@ -27,6 +28,7 @@ fn main() {
   let relaxed_interpolations = matches.is_present("relaxed-interpolations");
   let quiet = matches.is_present("quiet");
   let nanosec = matches.is_present("nanosec");
+  let _tui_option = matches.is_present("tui");
 
   let benchmark_result = benchmark::execute(benchmark_file, report_path_option, relaxed_interpolations, no_check_certificate, quiet, nanosec);
   let list_reports = benchmark_result.reports;
@@ -51,6 +53,7 @@ fn app_args<'a>() -> clap::ArgMatches<'a> {
     .arg(Arg::with_name("no-check-certificate").long("no-check-certificate").help("Disables SSL certification check. (Not recommended)").takes_value(false))
     .arg(Arg::with_name("quiet").short("q").long("quiet").help("Disables output").takes_value(false))
     .arg(Arg::with_name("nanosec").short("n").long("nanosec").help("Shows statistics in nanoseconds").takes_value(false))
+    .arg(Arg::with_name("tui").long("tui").help("Run Drill with a TUI enabled").takes_value(false))
     .get_matches()
 }
 
